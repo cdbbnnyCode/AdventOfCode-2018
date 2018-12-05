@@ -79,4 +79,4 @@ best_time=( $(echo "$timetable" | sort -r | head -n 1) )
 echo
 echo "Guard #${best_time[1]} was sleeping ${best_time[0]} times on minute ${best_time[2]}"
 echo
-echo "Result: $(( ${best_time[1]} * ${best_time[2]} ))"
+echo "Result: $(( 10#${best_time[1]} * 10#${best_time[2]} ))"
