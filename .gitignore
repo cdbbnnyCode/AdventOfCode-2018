@@ -1,2 +1,3 @@
 # Don't commit our private data!
 session.txt
+*.png
