@@ -31,16 +31,16 @@ workers=( 0 0 0 0 0 )
 tasks=( )
 
 while [ ${#remaining[@]} -gt 0 -o ${#tasks[@]} -gt 0 ]; do
-  echo "Time: ${elapsed}s"
+  # echo "Time: ${elapsed}s"
   for ltr in ${remaining[@]}; do
     depstring=$(echo ${deps[$ltr]} | tr ',' $'\n')
     compstring=$(echo ${has[@]} | tr ' ' $'\n')
     depend=( $(comm -23 <(echo "$depstring" | sort) <(echo "$compstring" | sort)) )
     if [ ${#depend[@]} -eq 0 ]; then
-      echo "  $ltr available for processing"
+      # echo "  $ltr available for processing"
       for wid in ${!workers[@]}; do
         if [ ${workers[$wid]} -eq 0 ]; then
-          echo "    Dispatching $ltr to worker $wid"
+          # echo "    Dispatching $ltr to worker $wid"
           tasks[$wid]=$ltr
           workers[$wid]=${delays[$ltr]}
 
@@ -51,21 +51,27 @@ while [ ${#remaining[@]} -gt 0 -o ${#tasks[@]} -gt 0 ]; do
       done
     fi
   done
-  echo "  Remaining: ${remaining[@]}"
+  # echo "  Remaining: ${remaining[@]}"
+
+  printf "%4ds " $elapsed
+  for (( ctr = 0; ctr < ${#workers[@]}; ctr++ )); do
+    printf "%1s " ${tasks[$ctr]}
+  done
+  printf '\n'
+
   for wid in ${!workers[@]}; do
     if [ ${workers[$wid]} -gt 0 ]; then
       (( workers[$wid] -= 1 ))
     fi
     if [ ${workers[$wid]} -le 0 ]; then
       if [ -n "${tasks[$wid]}" ]; then
-        echo "  Worker $wid completed task ${tasks[$wid]}"
+        # echo "  Worker $wid completed task ${tasks[$wid]}"
         has+=( ${tasks[$wid]} )
         unset tasks[$wid]
       fi
     fi
   done
   (( elapsed += 1 ))
-  sleep .1
 done
 
 echo "$elapsed seconds total"
